@@ -1,0 +1,104 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { SEO } from 'astro-seo';
+import Layout from './Layout.astro';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Icon } from 'astro-icon/components';
+
+type Props = {
+  post: CollectionEntry<'blog'>;
+};
+
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, categories, author, ogImage, canonicalURL } = post.data;
+
+const formattedPubDate = format(pubDate, "d 'de' MMMM, yyyy", { locale: ptBR });
+const formattedUpdatedDate = updatedDate ? format(updatedDate, "d 'de' MMMM, yyyy", { locale: ptBR }) : null;
+---
+
+<Layout title={title}>
+  <SEO
+    slot="head"
+    title={title}
+    description={description}
+    openGraph={{
+      basic: {
+        title,
+        type: "article",
+        image: ogImage || heroImage || "/default-og.png",
+      },
+      optional: {
+        description,
+        siteName: "RagnaTales Blog",
+      },
+      article: {
+        publishedTime: pubDate.toISOString(),
+        modifiedTime: updatedDate?.toISOString(),
+        authors: [author],
+        tags: categories,
+      },
+    }}
+    extend={{
+      link: [
+        { rel: "canonical", href: canonicalURL || Astro.url.href },
+      ],
+      meta: [
+        { name: "author", content: author },
+        { name: "date", content: pubDate.toISOString() },
+      ],
+    }}
+  />
+
+  <article class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+    <div class="max-w-3xl mx-auto">
+      <!-- Categories -->
+      <div class="flex flex-wrap gap-2 mb-8">
+        {categories.map(category => (
+          <a
+            href={`/category/${category}`}
+            class="inline-flex items-center gap-1 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg border border-gray-200 dark:border-gray-700 px-3 py-1 text-sm font-medium text-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-800 transition-colors duration-200"
+          >
+            <Icon name="ph:hash-bold" class="w-4 h-4" />
+            {category}
+          </a>
+        ))}
+      </div>
+
+      <!-- Title and Meta -->
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">{title}</h1>
+      <div class="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400 mb-8">
+        <div class="flex items-center gap-2">
+          <Icon name="ph:user-bold" class="w-4 h-4" />
+          <span>{author}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <Icon name="ph:calendar-bold" class="w-4 h-4" />
+          <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+        </div>
+        {formattedUpdatedDate && (
+          <div class="flex items-center gap-2">
+            <Icon name="ph:clock-bold" class="w-4 h-4" />
+            <span>Atualizado: {formattedUpdatedDate}</span>
+          </div>
+        )}
+      </div>
+
+      <!-- Hero Image -->
+      {heroImage && (
+        <div class="relative rounded-2xl overflow-hidden mb-12">
+          <img
+            src={heroImage}
+            alt={title}
+            class="w-full aspect-video object-cover"
+          />
+        </div>
+      )}
+
+      <!-- Content -->
+      <div class="prose prose-lg dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-800 dark:prose-p:text-gray-300 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-img:rounded-xl prose-li:text-gray-800 dark:prose-li:text-gray-300 mx-auto">
+        <slot />
+      </div>
+    </div>
+  </article>
+</Layout>

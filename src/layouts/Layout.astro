@@ -1,0 +1,70 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))" :class="{ 'dark': darkMode }">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="RagnaTales Blog - Seu portal de notícias e conteúdo sobre Ragnarök" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title} | RagnaTales Blog</title>
+		<slot name="head" />
+		<script is:inline src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	</head>
+	<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+		<header class="sticky top-0 z-50 backdrop-blur-lg bg-white/70 dark:bg-gray-900/70 border-b border-gray-200 dark:border-gray-700">
+			<nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+				<div class="flex h-16 justify-between items-center">
+					<div class="flex items-center space-x-2">
+						<Icon name="ph:sword-bold" class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+						<a href="/" class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+							RagnaTales Blog
+						</a>
+					</div>
+					<button
+						@click="darkMode = !darkMode"
+						class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+						aria-label="Alternar modo escuro"
+					>
+						<Icon name="ph:sun-bold" class="w-5 h-5 hidden dark:block text-gray-200" />
+						<Icon name="ph:moon-bold" class="w-5 h-5 block dark:hidden text-gray-600" />
+					</button>
+				</div>
+			</nav>
+		</header>
+
+		<div class="relative">
+			<div class="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+			<slot />
+		</div>
+
+		<footer class="mt-20 border-t border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg">
+			<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+				<p class="text-center text-sm text-gray-500 dark:text-gray-400">
+					© {new Date().getFullYear()} RagnaTales Blog. Todos os direitos reservados.
+				</p>
+			</div>
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+	@keyframes float {
+		0% { transform: translateY(0px); }
+		50% { transform: translateY(-20px); }
+		100% { transform: translateY(0px); }
+	}
+
+	.float {
+		animation: float 6s ease-in-out infinite;
+	}
+</style>
